@@ -7,7 +7,8 @@
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/btschwertfeger/Kraken-Rebalance-Bot)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7+-blue.svg)](https://shields.io/)
-[![Downloads](https://static.pepy.tech/personalized-badge/Kraken-Rebalance-Bot?period=total&units=abbreviation&left_color=grey&right_color=orange&left_text=downloads)](https://pepy.tech/project/Kraken-Rebalance-Bot)
+
+<!-- [![Downloads](https://static.pepy.tech/personalized-badge/kraken-rebalance-bot?period=total&units=abbreviation&left_color=grey&right_color=orange&left_text=downloads)](https://pepy.tech/project/kraken-rebalance-bot) -->
 
 ![ql-workflow](https://github.com/btschwertfeger/Kraken-Rebalance-Bot/actions/workflows/codeql.yml/badge.svg)
 ![python-package](https://github.com/btschwertfeger/Kraken-Rebalance-Bot/actions/workflows/python-package.yml/badge.svg)
@@ -52,7 +53,7 @@ Actions can be logged on the command-line using the logging module with active I
 
 ### 1. Install the Python module:
 
-```python
+```bash
 python3 -m pip install kraken-rebalance-bot
 ```
 
