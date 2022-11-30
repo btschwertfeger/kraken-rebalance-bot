@@ -1,0 +1,4 @@
+python-kraken-sdk
+schedule
+numpy
+requests

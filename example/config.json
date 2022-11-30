@@ -1,0 +1,10 @@
+{
+  "base_currency": ["ETH", "XBT"],
+  "quote_currency": ["USD", "USD"],
+  "target_quantity": [50, 50],
+  "quote_to_maintain": [20, 20],
+  "margin": [0.035, 0.035],
+  "times": ["00:00", "06:00", "12:00", "18:00"],
+  "demo": true,
+  "use_build_in_sheduler": false
+}
