@@ -84,8 +84,9 @@ def main() -> None:
             'target_quantity': [500, 500],      # how many of the base to hold (value in quote)
             'quote_to_maintain': [200, 200],    # freezed quote/dont trade with this
             'margin': [0.035, 0.035],           # buy/sell threshold
+            'lowest_buy_price': [1000, 15000],  # dont buy below this price
             'times': ['06:00', '18:00'],        # optional of use_build_in_sheduler is True
-            'use_build_in_sheduler': False,      # if set to False, the script will only run once
+            'use_build_in_sheduler': False,     # if set to False, the script will only run once
             'demo': True,                       # set to false to enable trading
             'telegram': {                       # optional to get notified via telegram
                 'token': 'telegram-bot-token',
@@ -111,6 +112,7 @@ The file `/example/main.py` serves as an example on how to initialize and run th
 | `target_quantity`       | `List[float] \| List[int]`       | Defines how much of a base currency should be held. This value is the worth of the base currency in quote currency.                                                     |
 | `quote_to_maintain`     | `List[float] \| List[int]`       | How much of quote currency should not be touched in the portfolio.                                                                                                      |
 | `margin`                | `List[float]`                    | Rebalance levels e.g. 0.035 = 3.5%: at a change of 3.5% the algorithm will buy or sell the missing/surplus quantity                                                     |
+| `lowest_buy_price`      | `List[float]`                    | (optional) The bot will not buy if the price falls below this price to avoid catching a falling knife. Acts Kind of stop loss, but without selling.                     |
 | `times`                 | `List[str]`                      | (optional, default: `['00:00', '06:00', '12:00', '18:00']`) At which time the bot should check the balances.                                                            |
 | `use_build_in_sheduler` | `bool`                           | (optional, default: `False`) Checks the balances once and exits if set to False. Otherwise the program will run forever and check the balances at the specified `times` |
 | `demo`                  | `bool`                           | Trade or not sample trade output. Set to True if you know what this algorithm does.                                                                                     |

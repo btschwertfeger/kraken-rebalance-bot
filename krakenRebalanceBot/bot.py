@@ -84,10 +84,11 @@ class RebalanceBot():
 
             ticker = self.__market.get_ticker(pair=f'{base_currency}{quote_currency}')
             symbol = list(ticker.keys())[0]
-            value = available_balance_base * float(ticker[symbol]['c'][0])
+            price = float(ticker[symbol]['c'][0])
+            value = available_balance_base * price
 
             msg = f'\n👑 {symbol} Rebalance Bot'
-            msg += f'\n├ Price: {float(ticker[symbol]["c"][0])} '
+            msg += f'\n├ Price: {price} '
             msg += f'\n├ Available {base_currency} » {available_balance_base} ({value} {quote_currency} / {target_quantity} {quote_currency})'
             msg += f'\n└ Available {quote_currency} » {available_balance_quote}'
             logging.info(f'\n{msg}')
@@ -97,17 +98,23 @@ class RebalanceBot():
             if value <= target_quantity - target_quantity * margin: 
                 # check if buy would not break quantity to maintain
                 if available_balance_quote > quote_to_maintain + target_quantity - value: 
-                    self.__rebalance(
-                        symbol=symbol,
-                        side='buy',
-                        index=i,
-                        available={
-                            'base': available_balance_base, 
-                            'quote': available_balance_quote
-                        },
-                        last_price=float(ticker[symbol]['c'][0])
-                    )
-                    rebalanced = True
+                    # check if price is higher than the defined max buy price to avoid catching the falling knife
+                    if price >= self.__config['lowest_buy_price'][i]:
+                        self.__rebalance(
+                            symbol=symbol,
+                            side='buy',
+                            index=i,
+                            available={
+                                'base': available_balance_base, 
+                                'quote': available_balance_quote
+                            },
+                            last_price=float(ticker[symbol]['c'][0])
+                        )
+                        rebalanced = True
+                    else:
+                        msg = f'{symbol}: not buying because price ({price} {quote_currency}) is lower than the specified lowest buy price ({self.__config["max_buy_price"][i]} {quote_currency}).'
+                        logging.info(msg)
+
                 else:
                     msg = f'{symbol}: Not enough {quote_currency} to buy more {base_currency}. Noting changed.'
                     logging.info(msg)
@@ -260,12 +267,19 @@ class RebalanceBot():
         else: 
             ValueError('No margin defined in config.')
 
-         # ___MATCHING_PARAMETERS____
-        if len(self.__config['base_currency']) != len(self.__config['target_quantity'])              \
-            or len(self.__config['base_currency']) != len(self.__config['quote_currency'])            \
-            or len(self.__config['base_currency']) != len(self.__config['margin'])            \
-            or len(self.__config['base_currency']) != len(self.__config['quote_to_maintain']):
-            raise ValueError('Lengths of: base_currency, quantity, margin and quote_to_maintain must be the same.')
+        if 'lowest_buy_price' in self.__config:
+            if not isinstance(self.__config['lowest_buy_price'], list):
+                raise ValueError('lowest_buy_price should be type List[float].')
+        else:
+            self.__config['lowest_buy_price'] = [0.0] * len(self.__config['target_quantity'])
+
+        # ___MATCHING_PARAMETERS____
+        if len(self.__config['base_currency']) != len(self.__config['target_quantity'])                 \
+            or len(self.__config['base_currency']) != len(self.__config['quote_currency'])              \
+            or len(self.__config['base_currency']) != len(self.__config['margin'])                      \
+            or len(self.__config['base_currency']) != len(self.__config['quote_to_maintain'])           \
+            or len(self.__config['base_currency']) != len(self.__config['max_buy_price']):
+            raise ValueError('Lengths of: base_currency, quantity, margin, quote_to_maintain, and lowest_buy_price must be the same.')
 
         if 'times' in self.__config:
             if not isinstance(self.__config['times'], list) \
@@ -280,10 +294,12 @@ class RebalanceBot():
                 and 'chat_id' in self.__config['telegram'] and self.__config['telegram']['chat_id']:
                 self.__use_telegram = True
 
+        
+
+
         if 'demo' in self.__config and isinstance(self.__config['demo'], bool):
             self.__demo = self.__config['demo']
             logging.info('Demo mode active, not trading.')
-
 
     def send_to_telegram(self, message: str) -> None:
         '''Send a Message to telegram'''

@@ -4,6 +4,7 @@
   "target_quantity": [50, 50],
   "quote_to_maintain": [20, 20],
   "margin": [0.035, 0.035],
+  "lowest_buy_price": [1000, 16000],
   "times": ["00:00", "06:00", "12:00", "18:00"],
   "demo": true,
   "use_build_in_sheduler": false
