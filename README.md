@@ -29,7 +29,7 @@ It is not certain that this software will ever lead to profits.
 
 ## Package Update
 
-- November 30, 2022
+- December 10, 2022
 
 ---
 
