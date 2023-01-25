@@ -74,11 +74,11 @@ python3 -m pip install kraken-rebalance-bot
 Build an image and pass a config when starting the container:
 
 ```bash
-docker build -t krb:latest docker_src
-docker run --env-file docker_src/.docker.env krb
+docker build -t krb:latest examples/docker
+docker run --env-file examples/docker/.docker.env krb
 ```
 
-(`docker_src/.docker.env` contains the configuratin for this bot)
+(`examples/docker/.docker.env` contains the configuration for this bot)
 
 Output:
 
@@ -120,7 +120,7 @@ def main() -> None:
 if __name__ == '__main__': main()
 ```
 
-The file `/example/main.py` serves as an example on how to initialize and run this trading algorithm using the `.env` and `config.json` files (see <a href="https://github.com/btschwertfeger/Kraken-Rebalance-Bot" target="_blank">GitHub</a>). There is also a Jupyter notebook in which one can test the algorithm without risking any assets.
+The file `/examples/main.py` serves as an example on how to initialize and run this trading algorithm using the `.env` and `config.json` files (see <a href="https://github.com/btschwertfeger/Kraken-Rebalance-Bot" target="_blank">GitHub</a>). There is also a Jupyter notebook in which one can test the algorithm without risking any assets.
 
 - <b>To see the output on the command line you need to enable logging with level INFO as shown in the example script.</b>
 - <b>If `use_build_in_sheduler` is enabled, there will be no output until the time is one of `times`.</b>
