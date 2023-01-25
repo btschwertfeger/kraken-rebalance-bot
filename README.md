@@ -29,7 +29,7 @@ It is not certain that this software will ever lead to profits.
 
 ## Package Update
 
-- December 10, 2022
+- January 25, 2023
 
 ---
 
@@ -69,6 +69,28 @@ python3 -m pip install kraken-rebalance-bot
 
 ### 4. Setup the configuration and start the algorithm
 
+#### a.) Using docker
+
+Build an image and pass a config when starting the container:
+
+```bash
+docker build -t krb:latest docker_src
+docker run --env-file docker_src/.docker.env krb
+```
+
+(`docker_src/.docker.env` contains the configuratin for this bot)
+
+Output:
+
+```bash
+2023/01/25 18:54:29 main,line: 42  WARNING | Not using telegram.
+2023/01/25 18:54:29 bot,line: 59     INFO | Starting the `kraken-rebalance-bot`
+2023/01/25 18:54:29 bot,line: 62     INFO | Using scheduled times @['00:00', '06:00', '12:00', '18:00']
+...
+```
+
+#### b.) Using a Python script
+
 In the following a minimal working example is shown that uses this strategy to hold a `target_quantity` of $500 of ETH and $500 worth of XBT. Both are traded agains USD. The `demo` key must be set to `False` to enable the trading functionality. Of course, this also works with only one asset, too.
 
 ```python
@@ -102,6 +124,8 @@ The file `/example/main.py` serves as an example on how to initialize and run th
 
 - <b>To see the output on the command line you need to enable logging with level INFO as shown in the example script.</b>
 - <b>If `use_build_in_sheduler` is enabled, there will be no output until the time is one of `times`.</b>
+
+---
 
 ## 📖 Documentation of configuration arguments:
 

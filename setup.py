@@ -14,7 +14,7 @@ URL = 'https://github.com/btschwertfeger/Kraken-Rebalance-Bot'
 EMAIL = 'development@b-schwertfeger.de'
 AUTHOR = 'Benjamin Thomas Schwertfeger'
 REQUIRES_PYTHON = '>=3.7.0'
-VERSION = '0.5.7'
+VERSION = '0.5.7.2'
 
 REQUIRED = [
     'python-kraken-sdk',

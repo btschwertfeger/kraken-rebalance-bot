@@ -56,8 +56,10 @@ class RebalanceBot():
         
     def run(self) -> None:
         '''Runs the bot'''
+        logging.info('Starting the `kraken-rebalance-bot`')
         
         if self.__config.get('use_build_in_sheduler', False):
+            logging.info(f'Using scheduled times @{self.__config["times"]}')
             for schedule_time in self.__config['times']:
                 schedule.every().day.at(schedule_time).do(self.__check_balances)
 
@@ -71,7 +73,7 @@ class RebalanceBot():
 
     def __check_balances(self) -> None:
         '''Checks if buy or sell order must be placed'''
-        logging.info('Checking balances')
+        logging.info('Checking balances ...')
 
         for i, base_currency in enumerate(self.__config['base_currency']):
             quote_to_maintain = self.__config['quote_to_maintain'][i]
@@ -112,7 +114,7 @@ class RebalanceBot():
                         )
                         rebalanced = True
                     else:
-                        msg = f'{symbol}: not buying because price ({price} {quote_currency}) is lower than the specified lowest buy price ({self.__config["max_buy_price"][i]} {quote_currency}).'
+                        msg = f'{symbol}: not buying because price ({price} {quote_currency}) is lower than the specified lowest buy price ({self.__config["lowest_buy_price"][i]} {quote_currency}).'
                         logging.info(msg)
 
                 else:
@@ -242,10 +244,10 @@ class RebalanceBot():
                 raise ValueError('No quantity in config must be type List[float].')
             if len(self.__config['target_quantity']) == 0:
                 raise ValueError('No quantity defined in config.')
-            if len([q for q in self.__config['target_quantity'] if not isinstance(q, int) and not isinstance(q, int)]) != 0:
-                raise ValueError('quantity must be type int or float in config.')
+            if len([q for q in self.__config['target_quantity'] if not isinstance(q, int) and not isinstance(q, float)]) != 0:
+                raise ValueError('target_quantity must be type int or float in config.')
         else:
-            raise ValueError('No quantity defined in config.')
+            raise ValueError('No target_quantity defined in config.')
 
         # ___QUOTE_TO_MAINTAIN____
         if 'quote_to_maintain' in self.__config:
@@ -278,7 +280,7 @@ class RebalanceBot():
             or len(self.__config['base_currency']) != len(self.__config['quote_currency'])              \
             or len(self.__config['base_currency']) != len(self.__config['margin'])                      \
             or len(self.__config['base_currency']) != len(self.__config['quote_to_maintain'])           \
-            or len(self.__config['base_currency']) != len(self.__config['max_buy_price']):
+            or len(self.__config['base_currency']) != len(self.__config['lowest_buy_price']):
             raise ValueError('Lengths of: base_currency, quantity, margin, quote_to_maintain, and lowest_buy_price must be the same.')
 
         if 'times' in self.__config:
@@ -293,9 +295,6 @@ class RebalanceBot():
             if 'token' in self.__config['telegram'] and self.__config['telegram']['token'] \
                 and 'chat_id' in self.__config['telegram'] and self.__config['telegram']['chat_id']:
                 self.__use_telegram = True
-
-        
-
 
         if 'demo' in self.__config and isinstance(self.__config['demo'], bool):
             self.__demo = self.__config['demo']
