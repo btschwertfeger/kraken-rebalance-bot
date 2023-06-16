@@ -13,9 +13,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = [
-    "python-kraken-sdk",
+    "python-kraken-sdk>=1.3.0",
     "schedule",
-    "numpy",
     "requests",
 ]
 keywords = ["crypto", "trading", "kraken", "exchange", "api"]
@@ -28,16 +27,15 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Utilities",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Framework :: AsyncIO",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Unix"
 ]
+
+[project.scripts]
+rebalance = "rebalance:run"
 
 [project.urls]
 "Homepage" = "https://github.com/btschwertfeger/Kraken-Rebalance-Bot"
@@ -62,7 +60,7 @@ include = ["rebalance"]
 exclude = ["docs*", "tests*", "examples*", ".env"]
 
 [tool.setuptools_scm]
-write_to = "kraken/_version.py"
+write_to = "rebalance/_version.py"
 version_scheme = "guess-next-dev"
 local_scheme = "no-local-version"
 

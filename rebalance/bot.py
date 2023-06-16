@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=too-many-branches,too-many-statements
+
 """Module that implements the rebalance strategy"""
 
 import logging
 import sys
 import time
 
-import numpy as np
 import requests
 import schedule
 from kraken.spot import Market, Trade, User
@@ -41,7 +41,7 @@ class RebalanceBot:
                 "token": "your telegram token",
                 "chat_id": "your telegram chat id"
             },
-            'use_build_in_sheduler': false, # optional
+            'use_build_in_scheduler': false, # optional
         }
     )
     bot.run()
@@ -98,21 +98,21 @@ class RebalanceBot:
             )
             symbol: str = list(ticker.keys())[0]
             price: float = float(ticker[symbol]["c"][0])
-            value: float = available_balance_base * price
+            value_of_base: float = available_balance_base * price
 
             msg: str = f"\n👑 {symbol} Rebalance Bot"
             msg += f"\n├ Price: {price} "
-            msg += f"\n├ Available {base_currency} » {available_balance_base} ({value} {quote_currency} / {target_quantity} {quote_currency})"
+            msg += f"\n├ Available {base_currency} » {available_balance_base} ({value_of_base} {quote_currency} / {target_quantity} {quote_currency})"
             msg += f"\n└ Available {quote_currency} » {available_balance_quote}"
             logging.info(f"\n{msg}")
 
             rebalanced: bool = False
             # check range is left
-            if value <= target_quantity - target_quantity * margin:
+            if value_of_base <= target_quantity - target_quantity * margin:
                 # check if buy would not break quantity to maintain
                 if (
                     available_balance_quote
-                    > quote_to_maintain + target_quantity - value
+                    > quote_to_maintain + target_quantity - value_of_base
                 ):
                     # check if price is higher than the defined max buy price to avoid catching the falling knife
                     if price >= self.__config["lowest_buy_price"][i]:
@@ -136,7 +136,7 @@ class RebalanceBot:
                     logging.info(msg)
 
             # check if new sell
-            elif value >= target_quantity + target_quantity * margin:
+            elif value_of_base >= target_quantity + target_quantity * margin:
                 self.__rebalance(
                     symbol=symbol,
                     side="sell",
@@ -152,17 +152,16 @@ class RebalanceBot:
                 # wait to ensure that Krakens backend swallowed all requests
                 # to ensure the fetched balances match the actual balances
                 time.sleep(3)
-                available_balance_base = float(
-                    self.__user.get_balances(currency=base_currency)[
-                        "available_balance"
-                    ]
-                )
-                value = available_balance_base * float(
+                available_balance_base = self.__user.get_balances(
+                    currency=base_currency
+                )["available_balance"]
+
+                value_of_base = available_balance_base * float(
                     self.__market.get_ticker(pair=symbol)[symbol]["c"][0]
                 )
 
                 msg = f"👑 {symbol} Rebalance Bot updated values"
-                msg += f"\n├ Available {base_currency} » {available_balance_base} ({value} {quote_currency} / {target_quantity} {quote_currency})"
+                msg += f"\n├ Available {base_currency} » {available_balance_base} ({value_of_base} {quote_currency} / {target_quantity} {quote_currency})"
                 msg += f'\n└ Available {quote_currency} » {self.__user.get_balances(currency=quote_currency)["available_balance"]}'
                 logging.info(f"\n{msg}")
             else:
@@ -187,33 +186,13 @@ class RebalanceBot:
             available["base"] * last_price
         )
 
-        # get information about the symbol to calculate the buying or selling size
-        symbol_data: dict = self.__market.get_asset_pairs(pair=symbol)[symbol]
-        order_min: float = float(symbol_data["ordermin"])
-
-        base_factor = int(f'1{symbol_data["lot_decimals"]*str(0)}')
-        base_increment_size: float
-        if base_factor == 0:
-            base_increment_size = float(symbol_data["lot_multiplier"])
-        else:
-            base_increment_size = float(
-                int(symbol_data["lot_multiplier"]) / base_factor
-            )
-
-        base_round_val = self.__get_decimal_round_value(base_increment_size)
-        order_size = self.__floor(
-            value=abs(quote_volume) / float(last_price), precision=int(base_round_val)
+        base_volume: str = self.__trade.truncate(
+            amount=abs(quote_volume) / float(last_price),
+            amount_type="volume",
+            pair=symbol,
         )
 
-        if order_min > order_size:
-            msg = "❌ Ordermin > order size. Please check if your symbols or asset pairs \
-                minimum trade sizes match up with your target holdings, margins, and available quote balances. \
-                \n- also see: https://support.kraken.com/hc/en-us/articles/360050845612-Minimum-order-size-volume-for-trading-and-decimal-precision-for-residents-of-Japan-\
-                \n- and https://github.com/btschwertfeger/Kraken-Rebalance-Bot"
-            self.send_to_telegram(message=msg)
-            raise ValueError(msg)
-
-        msg = f'✅ {side[0].upper()}{side[1:]} {order_size} {self.__config["base_currency"][index]} around {last_price} '
+        msg = f'✅ {side[0].upper()}{side[1:]} {base_volume} {self.__config["base_currency"][index]} around {last_price} '
         msg += f'{self.__config["quote_currency"][index]} (volume: {quote_volume} {self.__config["quote_currency"][index]})'
         logging.info(msg)
         self.send_to_telegram(message=msg)
@@ -223,38 +202,24 @@ class RebalanceBot:
 
         if side == "buy":
             response = self.__trade.create_order(
-                ordertype="market", side="buy", pair=symbol, volume=order_size
+                ordertype="market", side="buy", pair=symbol, volume=base_volume
             )
             logging.debug(f"Placed order response: {response}")
 
         if side == "sell":
             response = self.__trade.create_order(
-                ordertype="market", side="sell", pair=symbol, volume=order_size
+                ordertype="market", side="sell", pair=symbol, volume=base_volume
             )
             logging.debug(f"Placed order response: {response}")
-
-    def __floor(self: "RebalanceBot", value: float, precision: int = 0) -> float:
-        """floor to precision"""
-        return np.true_divide(  # type: ignore[no-any-return]
-            np.floor(value * 10.0**precision), 10.0**precision
-        )
-
-    def __get_decimal_round_value(self: "RebalanceBot", value: float) -> float:
-        """returns the number on how often to multiply x by 10 to get x >= 1"""
-        round_value = 0
-        while value < 1:
-            value *= 10
-            round_value += 1
-        return round_value
 
     def __check_config(self: "RebalanceBot") -> None:
         """Checks the config for missing or wrong values"""
         # ___base_currency____
         if "base_currency" in self.__config:
             if not isinstance(self.__config["base_currency"], list):
-                raise ValueError("base_currency must be type List[str] in config.")
+                raise TypeError("base_currency must be type List[str] in config.")
             if len(self.__config["base_currency"]) == 0:
-                raise ValueError("No pair(s) specified in config.")
+                raise TypeError("No pair(s) specified in config.")
             if (
                 len(
                     [
@@ -265,13 +230,13 @@ class RebalanceBot:
                 )
                 != 0
             ):
-                raise ValueError("Each pair in config must be type str.")
+                raise TypeError("Each pair in config must be type str.")
         else:
-            raise ValueError("Missing base_currency in config file.")
+            raise TypeError("Missing base_currency in config file.")
 
         if "quote_currency" in self.__config:
             if not isinstance(self.__config["quote_currency"], list):
-                raise ValueError("quote_currency must be type List[str] in config.")
+                raise TypeError("quote_currency must be type List[str] in config.")
             if len(self.__config["quote_currency"]) == 0:
                 raise ValueError("No pair(s) specified in config.")
             if (
@@ -284,16 +249,16 @@ class RebalanceBot:
                 )
                 != 0
             ):
-                raise ValueError("Each pair in config must be type str.")
+                raise TypeError("Each pair in config must be type str.")
         else:
-            raise ValueError("Missing quote_currency in config file.")
+            raise TypeError("Missing quote_currency in config file.")
 
         # ___quantity____
         if "target_quantity" in self.__config:
             if not isinstance(self.__config["target_quantity"], list):
-                raise ValueError("No quantity in config must be type List[float].")
+                raise TypeError("No quantity in config must be type list[float].")
             if len(self.__config["target_quantity"]) == 0:
-                raise ValueError("No quantity defined in config.")
+                raise TypeError("No quantity defined in config.")
             if (
                 len(
                     [
@@ -304,18 +269,18 @@ class RebalanceBot:
                 )
                 != 0
             ):
-                raise ValueError("target_quantity must be type int or float in config.")
+                raise TypeError("target_quantity must be type int or float in config.")
         else:
-            raise ValueError("No target_quantity defined in config.")
+            raise TypeError("No target_quantity defined in config.")
 
         # ___QUOTE_TO_MAINTAIN____
         if "quote_to_maintain" in self.__config:
             if not isinstance(self.__config["quote_to_maintain"], list):
-                raise ValueError(
+                raise TypeError(
                     "No quote_to_maintain in config must be type List[float]."
                 )
             if len(self.__config["quote_to_maintain"]) == 0:
-                raise ValueError("No quote_to_maintain specified.")
+                raise TypeError("No quote_to_maintain specified.")
             if (
                 len(
                     [
@@ -326,7 +291,7 @@ class RebalanceBot:
                 )
                 != 0
             ):
-                raise ValueError(
+                raise TypeError(
                     "quote_to_maintain must be type int or float in config."
                 )
         else:
@@ -335,7 +300,7 @@ class RebalanceBot:
         # ___MARGIN___
         if "margin" in self.__config:
             if not isinstance(self.__config["margin"], list):
-                raise ValueError("margin should be type List[str].")
+                raise TypeError("margin should be type list[str].")
             if (
                 len(
                     [
@@ -346,15 +311,15 @@ class RebalanceBot:
                 )
                 != 0
             ):
-                raise ValueError(
+                raise TypeError(
                     "Margin should be less than 0.99, e.g. 0.04 for a 4% rebalance."
                 )
         else:
-            raise ValueError("No margin defined in config.")
+            raise TypeError("No margin defined in config.")
 
         if "lowest_buy_price" in self.__config:
             if not isinstance(self.__config["lowest_buy_price"], list):
-                raise ValueError("lowest_buy_price should be type List[float].")
+                raise TypeError("lowest_buy_price should be type List[float].")
         else:
             self.__config["lowest_buy_price"] = [0.0] * len(
                 self.__config["target_quantity"]
@@ -381,7 +346,7 @@ class RebalanceBot:
                 or len([t for t in self.__config["times"] if not isinstance(t, str)])
                 != 0
             ):
-                raise ValueError("times must be type List[str] in config.")
+                raise TypeError("times must be type List[str] in config.")
         else:
             logging.warning(
                 'No times specfied in config. Default ["00:00", "06:00", "12:00", "18:00"] will be used.'
