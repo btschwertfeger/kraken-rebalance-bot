@@ -1,8 +1,0 @@
-{
-  "base_currency": ["ETH"],
-  "quote_currency": ["USD"],
-  "target_quantity": [1000],
-  "quote_to_maintain": [500],
-  "margin": [0.05],
-  "demo": false
-}
