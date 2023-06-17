@@ -7,18 +7,14 @@
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/btschwertfeger/Kraken-Rebalance-Bot)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Generic badge](https://img.shields.io/badge/python-3.11+-blue.svg)](https://shields.io/)
-
 ![release](https://shields.io/github/release-date/btschwertfeger/kraken-rebalance-bot)
 [![release](https://img.shields.io/pypi/v/kraken-rebalance-bot)](https://pypi.org/project/kraken-rebalance-bot/)
-
 [![Typing](https://img.shields.io/badge/typing-mypy-informational)](https://mypy-lang.org/)
 ![ql-workflow](https://github.com/btschwertfeger/Kraken-Rebalance-Bot/actions/workflows/codeql.yml/badge.svg)
 
 </div>
 
-<h3>
 > ⚠️ This is an unofficial trading bot that performs buys and sells on the Kraken cryptocurrency exchange using Python.
-</h3>
 
 ---
 
@@ -62,7 +58,7 @@ python3 -m pip install kraken-rebalance-bot
 
 1. Create a bot using <a href="https://t.me/BotFather" target="_blank">@BotFather</a>
 2. Write down/remember the token
-3. Start <a href="https://t.me/RawDataBot" target="_blank">@RawDataBot</a> and write down your personal chat id
+3. Start <a href="https://t.me/RawDataBot" target="_blank">@RawDataBot</a> and write down your personal `chat_id`
 
 ### 4. Setup the configuration and start the algorithm
 
@@ -92,19 +88,22 @@ The `demo` key must be set to `False` to enable the trading functionality. Of co
 with only one asset, too.
 
 ```bash
-rebalance --api-key "your-kraken-api-key-here" --secret-key "secret-key-here" --config config.json
+rebalance \
+  --api-key "your-kraken-api-key-here" \
+  --secret-key "secret-key-here" \
+  --config config.json
 ```
 
 Note: If `use_build_in_scheduler` is enabled, there will be no output until the time is one of `times`.
 
 ---
 
-## 📖 Documentation of configuration arguments:
+## 📖 Configuration
 
 | Key                      | Type                             | Description                                                                                                                                                             |
 | ------------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `base_currency`          | `list[str]`                      | Array of base currrencies to trade and hold.                                                                                                                            |
-| `quote_currency`         | `list[str]`                      | Array of quote currencies to trade the base currency with.                                                                                                              |
+| `base_currency`          | `list[str]`                      | List of base currencies to trade and hold.                                                                                                                              |
+| `quote_currency`         | `list[str]`                      | List of quote currencies to trade the base currency with.                                                                                                               |
 | `target_quantity`        | `list[float] \| list[int]`       | Defines how much of a base currency should be held. This value is the worth of the base currency in quote currency.                                                     |
 | `quote_to_maintain`      | `list[float] \| list[int]`       | How much of quote currency should not be touched in the portfolio.                                                                                                      |
 | `margin`                 | `list[float]`                    | Rebalance levels e.g. 0.035 = 3.5%: at a change of 3.5% the algorithm will buy or sell the missing/surplus quantity                                                     |
