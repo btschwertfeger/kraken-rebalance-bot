@@ -10,7 +10,7 @@
 ![release](https://shields.io/github/release-date/btschwertfeger/kraken-rebalance-bot)
 [![release](https://img.shields.io/pypi/v/kraken-rebalance-bot)](https://pypi.org/project/kraken-rebalance-bot/)
 [![Typing](https://img.shields.io/badge/typing-mypy-informational)](https://mypy-lang.org/)
-![ql-workflow](https://github.com/btschwertfeger/Kraken-Rebalance-Bot/actions/workflows/codeql.yml/badge.svg)
+![ql-workflow](https://github.com/btschwertfeger/Kraken-Rebalance-Bot/actions/workflows/codeql.yaml/badge.svg)
 
 </div>
 
