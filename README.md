@@ -17,7 +17,7 @@
 > ⚠️ This is an unofficial trading bot that performs buys and sells
 > on the Kraken cryptocurrency exchange using Python.
 
-Backend to access the Kraken API: [python-kraken-sdk](https://github.com/btschwertfeger/python-kraken-sdk).
+Backend to access the Kraken API: [python-kraken-sdk](https://github.com/btschwertfeger/python-kraken-sdk)
 
 ---
 
@@ -88,7 +88,7 @@ this:
   "base_currency": ["ETH", "XBT"],    # base asset(s) to maintain
   "quote_currency": ["USD", "USD"],   # quote asset(s) to trade with
   "target_quantity": [500, 500],      # how many of the base to hold (value in quote)
-  "quote_to_maintain": [200, 200],    # freezed quote/don't trade with this
+  "quote_to_maintain": [200, 200],    # freezed quote
   "margin": [0.035, 0.035],           # buy/sell threshold
   "lowest_buy_price": [1000, 15000],  # don't buy below this price
   "times": ["06:00", "18:00"],        # has no effect if use_build_in_scheduler is true
