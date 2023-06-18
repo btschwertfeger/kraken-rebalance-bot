@@ -1,4 +1,7 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Copyright (C) 2023 Benjamin Thomas Schwertfeger
+# GitHub: https://github.com/btschwertfeger
 # pylint: disable=too-many-branches,too-many-statements
 
 """Module that implements the rebalance strategy"""
@@ -152,7 +155,7 @@ class RebalanceBot:
                 # wait to ensure that Krakens backend swallowed all requests
                 # to ensure the fetched balances match the actual balances
                 time.sleep(3)
-                available_balance_base = self.__user.get_balances(
+                available_balance_base = self.__user.get_balance(
                     currency=base_currency
                 )["available_balance"]
 
@@ -162,7 +165,7 @@ class RebalanceBot:
 
                 msg = f"👑 {symbol} Rebalance Bot updated values"
                 msg += f"\n├ Available {base_currency} » {available_balance_base} ({value_of_base} {quote_currency} / {target_quantity} {quote_currency})"
-                msg += f'\n└ Available {quote_currency} » {self.__user.get_balances(currency=quote_currency)["available_balance"]}'
+                msg += f'\n└ Available {quote_currency} » {self.__user.get_balance(currency=quote_currency)["available_balance"]}'
                 logging.info(f"\n{msg}")
             else:
                 msg += "\n... nothing changed."
@@ -214,7 +217,7 @@ class RebalanceBot:
 
     def __check_config(self: "RebalanceBot") -> None:
         """Checks the config for missing or wrong values"""
-        # ___base_currency____
+
         if "base_currency" in self.__config:
             if not isinstance(self.__config["base_currency"], list):
                 raise TypeError("base_currency must be type List[str] in config.")
