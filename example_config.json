@@ -1,0 +1,15 @@
+{
+  "base_currency": ["ETH", "XBT"],
+  "quote_currency": ["USD", "USD"],
+  "target_quantity": [500, 500],
+  "quote_to_maintain": [200, 200],
+  "margin": [0.035, 0.035],
+  "lowest_buy_price": [1000, 15000],
+  "times": ["06:00", "18:00"],
+  "use_build_in_scheduler": true,
+  "demo": true,
+  "telegram": {
+    "token": "telegram-bot-token",
+    "chat_id": "your-telegram-chat-id"
+  }
+}

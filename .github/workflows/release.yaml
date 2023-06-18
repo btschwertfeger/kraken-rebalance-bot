@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2023 Benjamin Thomas Schwertfeger
+# GitHub: https://github.com/btschwertfeger
+#
+
+name: PyPI Production Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  ## ==========================================================================
+  ##    Run pre-commit - just to make sure that the code is still
+  ##    in the proper format
+  ##
+  Pre-Commit:
+    uses: ./.github/workflows/_pre_commit.yaml
+
+  ## ==========================================================================
+  ##  Discover vulnerabilities
+  ##
+  CodeQL:
+    uses: ./.github/workflows/_codeql.yaml
+
+  ## ==========================================================================
+  ##    Build the package - for all Python versions
+  ##
+  Build:
+    uses: ./.github/workflows/_build.yaml
+    needs: [Pre-Commit]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        python-version: ["3.11"]
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+
+  ## ==========================================================================
+  ##    Upload the python-kraken-sdk to Test PyPI
+  ##
+  UploadTestPyPI:
+    needs: [Build]
+    name: Upload the current release to Test PyPI
+    uses: ./.github/workflows/_pypi_publish.yaml
+    with:
+      REPOSITORY_URL: https://test.pypi.org/legacy/
+    secrets:
+      API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+  ## ==========================================================================
+  ##    Upload the python-kraken-sdk to Production PyPI
+  ##
+  UploadPyPI:
+    needs: [UploadTestPyPI]
+    name: Upload the current release to PyPI
+    uses: ./.github/workflows/_pypi_publish.yaml
+    with:
+      REPOSITORY_URL: https://upload.pypi.org/legacy/
+    secrets:
+      API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
