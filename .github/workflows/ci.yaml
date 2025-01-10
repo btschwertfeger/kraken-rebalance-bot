@@ -10,11 +10,17 @@ name: CI
 
 on:
   push:
-    branches:
-      - "**"
+    branches: [master]
+  schedule:
+    - cron: "20 16 */7 * *"
+  release:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: ["**"]
 
 concurrency:
-  group: CI-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -52,8 +58,8 @@ jobs:
   ##
   UploadPyPI:
     if: success() && github.actor == 'btschwertfeger' && github.ref == 'refs/heads/master'
-    needs: [Build]
+    needs: [Build, Pre-Commit, CodeQL]
     name: Upload current development version to Test PyPI
     uses: ./.github/workflows/_pypi_publish.yaml
     secrets:
-      API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
