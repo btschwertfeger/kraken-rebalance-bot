@@ -60,23 +60,23 @@ jobs:
         run: |
           uv build .
           uv tool install dist/kraken_rebalance_bot*.whl
-          uv run kraken-infinity-grid --version
+          uv run rebalance --help
 
       - name: Build macOS
         if: runner.os == 'macOS'
         run: |
           uv build .
-          uv tool install dist/kraken_infinity_grikraken_rebalance_bot*.whl
-          uv run kraken-infinity-grid --version
+          uv tool install dist/kraken_rebalance_bot*.whl
+          uv run rebalance --help
 
       - name: Build Windows
         if: runner.os == 'Windows'
         run: |
           uv build .
           try {
-              $WHEEL = Get-ChildItem -Path ./dist -Filter "kraken_infinity_grikraken_rebalance_bot*.whl" -ErrorAction Stop
+              $WHEEL = Get-ChildItem -Path ./dist -Filter "kraken_rebalance_bot*.whl" -ErrorAction Stop
               uv tool install $WHEEL#
-              uv run kraken-infinity-grid --version
+              uv run rebalance --help
           } catch {
               Write-Error "Error: .whl file not found in .\dist."
               exit 1
