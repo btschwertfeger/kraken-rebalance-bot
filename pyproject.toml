@@ -6,32 +6,30 @@ build-backend = "setuptools.build_meta"
 name = "kraken-rebalance-bot"
 dynamic = ["version"]
 authors = [
-  {name = "Benjamin Thomas Schwertfeger", email = "contact@b-schwertfeger.de"},
+  { name = "Benjamin Thomas Schwertfeger", email = "contact@b-schwertfeger.de" },
 ]
 description = "A rebalance trading bot for the Kraken cryptocurrency exchange."
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
-dependencies = [
-    "python-kraken-sdk>=1.3.0",
-    "schedule",
-    "requests",
-]
+dependencies = ["python-kraken-sdk~=3.1", "schedule", "requests"]
 keywords = ["crypto", "trading", "kraken", "exchange", "api"]
 classifiers = [
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Topic :: Office/Business :: Financial",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Utilities",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
-    "Framework :: AsyncIO",
-    "Natural Language :: English",
-    "Operating System :: MacOS",
-    "Operating System :: Unix"
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Topic :: Office/Business :: Financial",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Utilities",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Framework :: AsyncIO",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: Unix",
 ]
 
 [project.scripts]
@@ -49,7 +47,7 @@ dev = [
   "black",
   # typing
   "mypy",
-  "types-requests"
+  "types-requests",
 ]
 
 [tool.setuptools]

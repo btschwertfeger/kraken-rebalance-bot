@@ -622,7 +622,7 @@ copy of the Program in return for a fee.
 
     This is a simple automated trading strategy that serves as an
     example on how to use the python-kraken-sdk
-    (https://github.com/btschwertfeger/Python-Kraken-SDK).
+    (https://github.com/btschwertfeger/python-kraken-sdk).
     Copyright (C) 2022 Benjamin Thomas Schwertfeger
     E-Mail: development@b-schwertfeger.de
 
