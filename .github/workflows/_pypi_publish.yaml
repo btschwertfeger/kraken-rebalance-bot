@@ -24,19 +24,13 @@ jobs:
       id-token: write # IMPORTANT: this permission is mandatory for OIDC publishing
     environment:
       name: pypi
-      url: https://pypi.org/p/python-kraken-sdk
+      url: https://pypi.org/p/kraken-rebalance-bot
     steps:
       - name: Download all the distributions
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: python-package-distributions
           path: dist/
-
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@67339c736fd9354cd4f8cb0b744f2b82a74b5c70 # release/v1
-        with:
-          password: ${{ secrets.API_TOKEN }}
-          repository-url: https://upload.pypi.org/legacy/
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@67339c736fd9354cd4f8cb0b744f2b82a74b5c70 # release/v1
