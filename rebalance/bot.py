@@ -173,7 +173,7 @@ class RebalanceBot:
             self.send_to_telegram(message=msg)
             time.sleep(1)
 
-    def __rebalance(
+    def __rebalance(  # pylint: disable=too-many-positional-arguments
         self: "RebalanceBot",
         symbol: str,
         side: str,
