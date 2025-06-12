@@ -28,21 +28,21 @@ repos:
       - id: rst-directive-colons
       - id: text-unicode-replacement-char
   - repo: https://github.com/psf/black
-    rev: 24.10.0
+    rev: 25.1.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 6.0.1
     hooks:
       - id: isort
         args: ["--profile", "black"] # solves conflicts between black and isort
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: 7.2.0
     hooks:
       - id: flake8
         args: ["--select=E9,F63,F7,F82", "--show-source", "--statistics"]
   - repo: https://github.com/pycqa/pylint
-    rev: v3.3.3
+    rev: v3.3.7
     hooks:
       - id: pylint
         name: pylint
@@ -50,7 +50,7 @@ repos:
         exclude: ^examples/|^tests/|^setup.py$
         args: ["--rcfile=.pylintrc", "-d", "R0801"] # ignore duplicate code
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+    rev: v1.16.0
     hooks:
       - id: mypy
         name: mypy
@@ -61,6 +61,6 @@ repos:
           - rebalance
         pass_filenames: false
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.4.2
+    rev: v3.5.3
     hooks:
       - id: prettier
